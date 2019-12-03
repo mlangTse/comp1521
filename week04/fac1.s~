@@ -1,0 +1,132 @@
+# COMP1521 19t2 ... Game of Life on a NxN grid
+#
+# Written by <<MINGLANG XIE>>, June 2019
+
+## Requires (from `boardX.s'):
+# - N (word): board dimensions
+# - board (byte[][]): initial board state
+# - newBoard (byte[][]): next board state
+	
+	.data
+msg1:	.asciiz "# Iterations: "
+msg2:	.asciiz "=== After iteration "
+msg3:	.asciiz " ==="
+eol:	.asciiz "\n"
+
+## Provides:
+	.globl	main
+	.globl	decideCell
+	.globl	neighbours
+	.globl	copyBackAndShow
+
+
+########################################################################
+# .TEXT <main>
+	.text
+main:
+
+# Frame:	...
+# Uses:		...
+# Clobbers:	...
+
+# Locals:	...
+
+# Structure:
+#	main
+#	-> [prologue]
+#	-> ...
+#	-> [epilogue]
+
+# Code:
+	
+	# Your main program code goes here.  Good luck!
+	# Set up stack frame.
+	sw	$fp, -4($sp)	# push $fp onto stack
+	la	$fp, -4($sp)	# set up $fp for this function
+	sw	$ra, -4($fp)	# save return address
+	sw	$s0, -8($fp)	# save $s0 to use as ... int maxiters
+	sw	$s1, -12($fp)	# save $s1 to use as ... int i
+	sw	$s2, -16($fp)	# save $s2 to use as ... int j
+	addi	$sp, $sp, -20	# move $sp to top of stack
+
+	# code for main()
+	li	$s0, 0	# maxiters = 0
+
+	la 	$a0, msg1	
+	li	$v0, 4
+	syscall		# printf ("# Iterations: ")
+
+	li	$v0, 5
+	syscall		# scanf ("%d", into $v0)
+	
+	move 	$s0, $v0	# maxiters = $v0
+	lw 	$t0, N		# $t0 = N
+	
+	li	$t1, 0		# int n = 1
+
+	LOOP_n_iteration:
+		bgt	$t1, $s0, end_LOOP	# if (n > maciters) exit
+		li	$s1, -1			# int i = 0
+		addi	$t1, $t1, 1		# n++
+		
+		la	$a0, msg2		
+		li	$v0, 4
+		syscall				# printf ("=== After iteration ")
+
+		move 	$a0, $t1
+		li	$v0, 1
+		syscall				# printf ("%d", maxiters);
+
+		la	$a0, $t1
+		li	$v0, 4
+		syscall				# printf (" ===");
+
+		ble	$t1, $s0, LOOP_n_row	# if (n <= maxiters) goto next loop
+		j	LOOP_n_iteration
+	
+	LOOP_n_row:
+		bge	$s1, $t0, LOOP_n_iteration	# if (i >= N) exit
+		li	$s2, 0				# int j = 0
+		addi	$s1, $s1, 1			# i++
+		blt	$s1, $t0, LOOP_n_col		# if (i < N) goto next loop
+		j 	LOOP_n_row	
+
+	LOOP_n_col:
+		bge	$s2, $t0, LOOP_n_row	# if (j >= N) exit
+		jal	neighbours
+		jal	decideCell
+		addi	$s2, $s2, 1		# j++
+		j	LOOP_n_col
+
+	end_LOOP:
+
+	move $a0, $s2
+	li $v0, 1
+	syscall
+	jal	copyBackAndShow
+	# clean up stack frame
+	lw	$s2, -16($fp)	# restore $s2 value
+	lw	$s1, -12($fp)	# restore $s1 value
+	lw	$s0, -8($fp)	# restore $s0 value
+	lw	$ra, -4($fp)	# restore $ra for return
+	la	$sp, 4($fp)	# restore $sp (remove stack frame)
+	lw	$fp, ($fp)	# restore $fp (remove stack frame)
+
+	li	$v0, 0
+	jr	$ra		# return 0
+
+main__post:
+	jr	$ra
+
+decideCell:
+
+	jr	$ra
+
+
+neighbours:
+
+	jr	$ra
+
+copyBackAndShow:
+
+	jr	$ra
